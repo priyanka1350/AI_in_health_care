@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pneumonia Detection</title>
+    <script>
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const fileInput = document.getElementById('xray-image');
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerText = `Result: ${data.result}`;
+                document.getElementById('confidence').innerText = `Confidence: ${(data.confidence * 100).toFixed(2)}%`;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</head>
+<body>
+    <h1>Pneumonia Detection</h1>
+    <form id="upload-form" onsubmit="handleFormSubmit(event)">
+        <label for="xray-image">Upload X-ray Image:</label>
+        <input type="file" id="xray-image" name="file" accept="image/*" required>
+        <button type="submit">Predict</button>
+    </form>
+    <div id="result-container">
+        <p id="result">Result: </p>
+        <p id="confidence">Confidence: </p>
+    </div>
+</body>
+</html>
